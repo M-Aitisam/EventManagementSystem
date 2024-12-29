@@ -66,3 +66,22 @@ a, .btn-link {
     .blazor-error-boundary::after {
         content: "An error has occurred."
     }
+
+.event-image {
+    object-fit: cover; /* Ensures the image fits the space without distortion */
+    width: 100%; /* Makes the image take the full width of the container */
+    height: 200px; /* Adjust height as per design requirements */
+    border-radius: 8px; /* Optional: Adds rounded corners */
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); /* Optional: Adds shadow for better aesthetics */
+}
+@media (max-width: 768px) {
+    .event-image {
+        height: 150px;
+    }
+}
+
+@media (max-width: 576px) {
+    .event-image {
+        height: 100px;
+    }
+}

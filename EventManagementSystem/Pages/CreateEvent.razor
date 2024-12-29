@@ -38,27 +38,44 @@
             </div>
         </div>
 
+        <!-- Event Image -->
+        <div class="row">
+            <div class="col-lg-6 col-md-12 mb-4">
+                <label for="eventImage" class="form-label text-light">Event Image</label>
+                <InputFile id="eventImage" class="form-control form-control-lg shadow-sm" OnChange="HandleImageChange" />
+            </div>
+        </div>
+
         <!-- Create Event Button -->
         <div class="text-center">
             <button type="submit" class="btn btn-success btn-lg w-100 shadow-sm mt-4">Create Event</button>
         </div>
     </EditForm>
-
-  
 </div>
 
 @code {
     private Event newEvent = new Event();
+    private string? imageBase64;
+
+    // Method to handle image selection
+    private async Task HandleImageChange(InputFileChangeEventArgs e)
+    {
+        var file = e.File;
+        var buffer = new byte[file.Size];
+        await file.OpenReadStream().ReadAsync(buffer);
+
+        // Convert the image to base64
+        imageBase64 = $"data:{file.ContentType};base64,{Convert.ToBase64String(buffer)}";
+
+        // Set the image base64 data to the Event object
+        newEvent.ImageUrl = imageBase64; // Storing the image as base64 in the event model
+    }
 
     private async Task HandleValidSubmit()
     {
+        Console.WriteLine($"Event Data: {newEvent.Name}, {newEvent.Date}, {newEvent.Time}, {newEvent.Description}, {newEvent.ImageUrl}");
         await EventService.CreateEvent(newEvent);
-        Navigation.NavigateTo("/manage-events");
-       
+        Navigation.NavigateTo("/events");
     }
 
-    private void NavigateBack()
-    {
-        Navigation.NavigateTo("/dashboard");
-    }
 }
