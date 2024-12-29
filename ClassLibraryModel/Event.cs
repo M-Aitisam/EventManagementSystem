@@ -15,7 +15,7 @@
         public string? Location { get; set; }
         public bool MultipleDates { get; set; }
         public string? Type { get; set; }
-
+        public string? ImageUrl { get; set; }
         public string? CustomerName { get; set; }
         public string? Mobile { get; set; }
         public string? Email { get; set; }

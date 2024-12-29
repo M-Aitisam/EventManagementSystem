@@ -1,0 +1,146 @@
+﻿@page "/events"
+@inject EventService EventService
+
+<div class="container">
+    <div class="row">
+        @if (events != null && events.Any())
+        {
+            @foreach (var eventItem in events)
+            {
+                <div class="col-md-4">
+                    <div class="card mb-4">
+                        <img src="@eventItem.ImageUrl" class="card-img-top" alt="Event Image" />
+                        <div class="card-body">
+                            <h5 class="card-title">@eventItem.Name</h5>
+                            <p class="card-text">@eventItem.Description</p>
+                            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#buyTicketModal" @onclick="() => ShowTicketModal(eventItem)">Buy Tickets</button>
+                            <button class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#eventDetailModal" @onclick="() => ShowEventDetails(eventItem)">Event Details</button>
+                        </div>
+                    </div>
+                </div>
+            }
+        }
+        else
+        {
+            <p>No events available.</p>
+        }
+    </div>
+</div>
+
+<!-- Buy Tickets Modal -->
+<div class="modal fade" id="buyTicketModal" tabindex="-1" aria-labelledby="buyTicketModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="buyTicketModalLabel">Buy Tickets</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div>
+                    <label for="userName">Name:</label>
+                    <input type="text" id="userName" class="form-control" @bind="userName" />
+                </div>
+                <div>
+                    <label for="ticketDescription">Description:</label>
+                    <textarea id="ticketDescription" class="form-control" @bind="ticketDescription"></textarea>
+                </div>
+                <div>
+                    <label for="ticketCount">Number of Tickets:</label>
+                    <input type="number" id="ticketCount" class="form-control" @bind="ticketCount" />
+                </div>
+                <div>
+                    <label for="ticketPrice">Price:</label>
+                    <input type="number" id="ticketPrice" class="form-control" @bind="ticketPrice" />
+                </div>
+                <div>
+                    <label for="ticketType">Ticket Type:</label>
+                    <select id="ticketType" class="form-control" @bind="ticketType">
+                        <option value="VIP">VIP</option>
+                        <option value="Male">Male</option>
+                        <option value="Female">Female</option>
+                        <option value="Couple">Couple</option>
+                    </select>
+                </div>
+                <button class="btn btn-primary mt-3" @onclick="BuyTicket">Buy Ticket</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Event Details Modal -->
+<div class="modal fade" id="eventDetailModal" tabindex="-1" aria-labelledby="eventDetailModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="eventDetailModalLabel">Event Details</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                @if (eventDetail != null)
+                {
+                    <div>
+                        <h5>@eventDetail.Name</h5>
+                        <p>@eventDetail.Description</p>
+                        <p><strong>Event Date:</strong> @eventDetail.Date.ToString("MMMM dd, yyyy")</p>
+                    </div>
+                }
+                else
+                {
+                    <p>No event details available.</p>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    private string? userName;
+    private string? ticketDescription;
+    private int ticketCount;
+    private decimal ticketPrice;
+    private string? ticketType;
+    private Event? eventDetail;
+    private List<Event> events = new List<Event>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        events = await EventService.GetEvents(); // Fetch events when the component is initialized
+
+        if (events == null || !events.Any())
+        {
+            Console.WriteLine("No events available.");
+        }
+    }
+
+    private void ShowTicketModal(Event eventItem)
+    {
+        eventDetail = eventItem;
+        userName = string.Empty;
+        ticketDescription = string.Empty;
+        ticketCount = 0;
+        ticketPrice = 0;
+        ticketType = null;
+    }
+
+    private void ShowEventDetails(Event eventItem)
+    {
+        eventDetail = eventItem;
+    }
+
+    private async Task BuyTicket()
+    {
+        if (!string.IsNullOrEmpty(userName) && ticketCount > 0 && ticketPrice > 0 && !string.IsNullOrEmpty(ticketType) && eventDetail != null)
+        {
+            await EventService.CreateTicketAsync(
+                eventDetail.Id,
+                userName,
+                ticketDescription ?? string.Empty, // Ensure non-null description
+                ticketCount,
+                ticketPrice,
+                ticketType,
+                eventDetail.Date
+            );
+            StateHasChanged();
+        }
+    }
+}
