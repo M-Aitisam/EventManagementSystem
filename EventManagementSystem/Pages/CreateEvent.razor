@@ -1,56 +1,53 @@
 ﻿@page "/create-event"
-@layout MainLayout
 @inject EventService EventService
 @inject NavigationManager Navigation
 
-<div class="container mt-5 p-5" style="background: linear-gradient(135deg, #1d3557, #457b9d); border-radius: 12px; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);">
-    <h3 class="text-center text-white mb-4">Create New Event</h3>
+<div class="d-flex justify-content-center align-items-center vh-100" style="background-color: #f0f4f8;">
+    <div class="p-5" style="background: linear-gradient(135deg, #1d3557, #457b9d); border-radius: 12px; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2); width: 90%; max-width: 600px;">
+        <h3 class="text-center text-white mb-4">Create New Event</h3>
 
-    <EditForm Model="newEvent" OnValidSubmit="HandleValidSubmit">
-        <DataAnnotationsValidator />
-        <ValidationSummary class="text-warning" />
+        <EditForm Model="newEvent" OnValidSubmit="HandleValidSubmit">
+            <DataAnnotationsValidator />
+            <ValidationSummary class="text-warning mb-3" />
 
-        <div class="row">
-            <!-- Event Name -->
-            <div class="col-lg-6 col-md-12 mb-4">
-                <label for="eventName" class="form-label text-light">Event Name</label>
-                <InputText id="eventName" class="form-control form-control-lg shadow-sm" @bind-Value="newEvent.Name" required />
+            <div class="d-flex flex-column gap-3">
+                <!-- Event Name -->
+                <div>
+                    <label for="eventName" class="form-label text-light">Event Name</label>
+                    <InputText id="eventName" class="form-control shadow-sm" @bind-Value="newEvent.Name" placeholder="Enter event name" style="background: #f8f9fa; border-radius: 8px;" required />
+                </div>
+
+                <!-- Event Date -->
+                <div>
+                    <label for="eventDate" class="form-label text-light">Event Date</label>
+                    <InputDate id="eventDate" class="form-control shadow-sm" @bind-Value="newEvent.Date" style="background: #f8f9fa; border-radius: 8px;" required />
+                </div>
+
+                <!-- Event Time -->
+                <div>
+                    <label for="eventTime" class="form-label text-light">Event Time</label>
+                    <InputText id="eventTime" type="time" class="form-control shadow-sm" @bind-Value="newEvent.Time" style="background: #f8f9fa; border-radius: 8px;" required />
+                </div>
+
+                <!-- Event Description -->
+                <div>
+                    <label for="eventDescription" class="form-label text-light">Event Description</label>
+                    <InputTextArea id="eventDescription" class="form-control shadow-sm" @bind-Value="newEvent.Description" rows="4" placeholder="Describe the event" style="background: #f8f9fa; border-radius: 8px;" required />
+                </div>
+
+                <!-- Event Image -->
+                <div>
+                    <label for="eventImage" class="form-label text-light">Event Image</label>
+                    <InputFile id="eventImage" class="form-control shadow-sm" OnChange="HandleImageChange" style="background: #f8f9fa; border-radius: 8px;" />
+                </div>
+
+                <!-- Create Event Button -->
+                <div class="text-center">
+                    <button type="submit" class="btn btn-primary btn-lg w-100 shadow-sm" style="border-radius: 8px;">Create Event</button>
+                </div>
             </div>
-
-            <!-- Event Date -->
-            <div class="col-lg-6 col-md-12 mb-4">
-                <label for="eventDate" class="form-label text-light">Event Date</label>
-                <InputDate id="eventDate" class="form-control form-control-lg shadow-sm" @bind-Value="newEvent.Date" required />
-            </div>
-        </div>
-
-        <div class="row">
-            <!-- Event Time -->
-            <div class="col-lg-6 col-md-12 mb-4">
-                <label for="eventTime" class="form-label text-light">Event Time</label>
-                <InputText id="eventTime" class="form-control form-control-lg shadow-sm" @bind-Value="newEvent.Time" type="time" required />
-            </div>
-
-            <!-- Event Description -->
-            <div class="col-lg-6 col-md-12 mb-4">
-                <label for="eventDescription" class="form-label text-light">Event Description</label>
-                <InputTextArea id="eventDescription" class="form-control form-control-lg shadow-sm" @bind-Value="newEvent.Description" rows="4" required />
-            </div>
-        </div>
-
-        <!-- Event Image -->
-        <div class="row">
-            <div class="col-lg-6 col-md-12 mb-4">
-                <label for="eventImage" class="form-label text-light">Event Image</label>
-                <InputFile id="eventImage" class="form-control form-control-lg shadow-sm" OnChange="HandleImageChange" />
-            </div>
-        </div>
-
-        <!-- Create Event Button -->
-        <div class="text-center">
-            <button type="submit" class="btn btn-success btn-lg w-100 shadow-sm mt-4">Create Event</button>
-        </div>
-    </EditForm>
+        </EditForm>
+    </div>
 </div>
 
 @code {
@@ -75,7 +72,6 @@
     {
         Console.WriteLine($"Event Data: {newEvent.Name}, {newEvent.Date}, {newEvent.Time}, {newEvent.Description}, {newEvent.ImageUrl}");
         await EventService.CreateEvent(newEvent);
-        Navigation.NavigateTo("/events");
+       
     }
-
 }

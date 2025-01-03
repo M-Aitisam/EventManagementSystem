@@ -14,6 +14,7 @@
                              alt="Event Image" />
                         <div class="card-body">
                             <h5 class="card-title">@eventItem.Name</h5>
+                            <h5>Number of Tickets Sold: @eventItem.TicketsSold</h5>
                             <p class="card-text">@eventItem.Description</p>
                             <p class="text-muted">@eventItem.Date.ToString("MMMM dd, yyyy")</p>
                             <button class="btn btn-primary" @onclick="() => ShowTicketModal(eventItem)">Buy Tickets</button>
@@ -120,10 +121,34 @@
     private List<Event> events = new List<Event>();
     private bool isTicketModalVisible = false;
     private bool isEventDetailModalVisible = false;
+    private System.Timers.Timer? timer;
 
     protected override async Task OnInitializedAsync()
     {
         events = await EventService.GetEvents();
+
+        // Initialize the timer
+        timer = new System.Timers.Timer(10000); // 10 seconds
+        timer.Elapsed += async (sender, args) => await UpdateTicketCounts();
+        timer.AutoReset = true;
+        timer.Enabled = true;
+    }
+
+    private async Task UpdateTicketCounts()
+    {
+        // Fetch updated ticket counts from the service
+        var updatedEvents = await EventService.GetEvents();
+        foreach (var updatedEvent in updatedEvents)
+        {
+            var existingEvent = events.FirstOrDefault(e => e.Id == updatedEvent.Id);
+            if (existingEvent != null)
+            {
+                existingEvent.TicketsSold = updatedEvent.TicketsSold;
+            }
+        }
+
+        // Trigger UI update
+       await InvokeAsync(StateHasChanged);
     }
 
     private void ShowTicketModal(Event eventItem)
@@ -131,7 +156,7 @@
         eventDetail = eventItem;
         userName = string.Empty;
         ticketDescription = string.Empty;
-        ticketCount = 0;
+        ticketCount += 1;
         ticketPrice = 0;
         ticketType = null;
         isTicketModalVisible = true;

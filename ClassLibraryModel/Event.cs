@@ -19,7 +19,7 @@
         public string? CustomerName { get; set; }
         public string? Mobile { get; set; }
         public string? Email { get; set; }
-
+        public int TicketsSold = 12;
         public string? ServiceType { get; set; }
         public string Status
         {
